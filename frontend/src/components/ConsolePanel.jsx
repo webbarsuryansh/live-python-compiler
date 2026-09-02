@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function ConsolePanel({ stdout, error, timedOut, truncated, onJumpToLine }) {
+export default function ConsolePanel({ stdout, error, timedOut, truncated, onJumpToLine, style }) {
   const lines = (stdout || "").split("\n").filter((_, i, arr) => !(i === arr.length - 1 && arr[i] === ""));
 
   return (
-    <div className="console-panel">
+    <div className="console-panel" style={style}>
       {error && (
         <div className="error-block" onClick={() => error.line && onJumpToLine?.(error.line)}>
           <div className="error-title">

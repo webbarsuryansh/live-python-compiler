@@ -1,19 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 
-const EDITOR_OPTIONS = {
-  fontFamily: "'JetBrains Mono', monospace",
-  fontSize: 13,
-  minimap: { enabled: true },
-  lineNumbers: "on",
-  folding: true,
-  automaticLayout: true,
-  scrollBeyondLastLine: false,
-  smoothScrolling: true,
-  cursorBlinking: "smooth",
-  padding: { top: 12 },
-};
-
 export default function EditorPanel({
   code,
   onChange,
@@ -21,7 +8,20 @@ export default function EditorPanel({
   errorLine,
   runtimeSource,
   jumpToLine,
+  fontSize = 14,
 }) {
+  const editorOptions = {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize,
+    minimap: { enabled: true },
+    lineNumbers: "on",
+    folding: true,
+    automaticLayout: true,
+    scrollBeyondLastLine: false,
+    smoothScrolling: true,
+    cursorBlinking: "smooth",
+    padding: { top: 12 },
+  };
   const [view, setView] = useState("original"); // "original" | "runtime"
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -126,7 +126,7 @@ export default function EditorPanel({
             value={code}
             onChange={(v) => onChange(v ?? "")}
             onMount={handleMount}
-            options={EDITOR_OPTIONS}
+            options={editorOptions}
             theme="neon-void"
           />
         </div>

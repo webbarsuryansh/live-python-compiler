@@ -4,7 +4,7 @@ import { useDebounce } from "./useDebounce";
 
 const DEBOUNCE_MS = 500;
 
-export function useExecution(initialCode) {
+export function useExecution(initialCode, inputValue = "0") {
   const [code, setCode] = useState(initialCode);
   const [liveMode, setLiveMode] = useState(true);
   const [result, setResult] = useState(null);
@@ -25,7 +25,7 @@ export function useExecution(initialCode) {
     setIsRunning(true);
     setAwaitingValidCode(false);
     try {
-      const data = await executeCode(source);
+      const data = await executeCode(source, { inputValue });
       if (token !== lastRunToken.current) return; // stale response
       setResult(data);
       setRunError(null);
@@ -36,7 +36,7 @@ export function useExecution(initialCode) {
     } finally {
       if (token === lastRunToken.current) setIsRunning(false);
     }
-  }, []);
+  }, [inputValue]);
 
   // Live mode: run automatically on debounced code changes.
   useEffect(() => {
