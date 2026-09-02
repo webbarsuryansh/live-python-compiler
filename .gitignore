@@ -3,4 +3,5 @@ dist/
 __pycache__/
 *.pyc
 .env
+backend/app/data/*.json
 .DS_Store

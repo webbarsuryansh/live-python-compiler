@@ -1,12 +1,17 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+load_dotenv()
+
+from .routes.ai import router as ai_router
+from .routes.auth import router as auth_router
 from .routes.execute import router as execute_router
 
 app = FastAPI(
     title="Live Python Compiler API",
-    description="Executes Python code and returns a line-by-line, state-aware execution trace.",
-    version="0.1.0",
+    description="Executes Python code and returns a line-by-line, state-aware execution trace with auth, save, and AI help.",
+    version="0.1.1",
 )
 
 app.add_middleware(
@@ -18,6 +23,8 @@ app.add_middleware(
 )
 
 app.include_router(execute_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
+app.include_router(ai_router, prefix="/api")
 
 
 @app.get("/")

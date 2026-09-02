@@ -17,18 +17,20 @@ from .tracer import Tracer, ExecutionTimeout, StepLimitExceeded, USER_CODE_FILEN
 from .diff import diff_variables
 from .serialize import snapshot_vars
 
-# A conservative builtins allowlist for the dev sandbox. Even though this is
-# not a security boundary by itself, it removes the most obviously dangerous
-# names so accidental misuse (not malicious abuse) fails fast.
-_BLOCKED_BUILTINS = {"open", "exec", "eval", "compile", "__import__", "input"}
+# A conservative builtins allowlist for the dev sandbox. We intentionally keep
+# import support enabled so standard and third-party libraries can run in this
+# visualizer, while still blocking the most dangerous execution primitives.
+_BLOCKED_BUILTINS = {"open", "exec", "eval", "compile"}
 
 
-def _make_safe_builtins():
+def _make_safe_builtins(input_value: str = "0"):
     safe = {}
     for name in dir(builtins):
         if name in _BLOCKED_BUILTINS:
             continue
         safe[name] = getattr(builtins, name)
+    safe["__import__"] = __import__
+    safe["input"] = lambda prompt="": input_value
     return safe
 
 
@@ -50,7 +52,7 @@ def _friendly_error(exc: BaseException, source_lines: list[str]):
     }
 
 
-def run_code(code: str, timeout_seconds: float = 5.0, max_steps: int = 2000) -> dict:
+def run_code(code: str, timeout_seconds: float = 5.0, max_steps: int = 2000, input_value: str = "0") -> dict:
     start = time.monotonic()
     source_lines = code.splitlines()
 
@@ -74,7 +76,7 @@ def run_code(code: str, timeout_seconds: float = 5.0, max_steps: int = 2000) -> 
         }
 
     tracer = Tracer(source_lines, timeout_seconds=timeout_seconds, max_steps=max_steps)
-    exec_globals = {"__name__": "__main__", "__builtins__": _make_safe_builtins()}
+    exec_globals = {"__name__": "__main__", "__builtins__": _make_safe_builtins(input_value)}
 
     error = None
     timed_out = False

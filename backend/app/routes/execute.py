@@ -9,7 +9,12 @@ router = APIRouter()
 
 @router.post("/execute", response_model=ExecuteResponse)
 def execute(req: ExecuteRequest) -> ExecuteResponse:
-    result = run_code(req.code, timeout_seconds=req.timeout_seconds, max_steps=req.max_steps)
+    result = run_code(
+        req.code,
+        timeout_seconds=req.timeout_seconds,
+        max_steps=req.max_steps,
+        input_value=req.input_value,
+    )
 
     runtime_source = build_runtime_source(req.code, result["final_variables"])
 
