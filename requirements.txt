@@ -10,7 +10,7 @@ beautifulsoup4==4.12.3
 scikit-learn==1.5.2
 openai==1.54.1
 PyJWT==2.13.0
+pymongo==4.10.1
 python-dotenv==1.0.0
 google-genai==2.21.0
-pymongo==4.10.1
-imagekitio==4.1.0
+google-genai==2.21.0

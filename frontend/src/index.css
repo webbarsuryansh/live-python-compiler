@@ -801,6 +801,41 @@ body.is-resizing {
 .console-line::before { content: "❯ "; color: var(--cyan-dim); }
 .console-empty { color: var(--text-low); }
 
+.console-terminal-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.console-prompt {
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  line-height: 1.8;
+}
+
+.console-terminal-input {
+  flex: 1;
+  min-width: 0;
+  resize: vertical;
+  min-height: 28px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text-hi);
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.console-terminal-input:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.console-terminal-input::placeholder { color: var(--text-low); }
+
 .error-block {
   margin: 10px 16px;
   padding: 12px 14px;

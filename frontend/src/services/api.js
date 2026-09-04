@@ -69,7 +69,14 @@ async function request(path, options = {}, token = null) {
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(text || `Request failed (${res.status})`);
+    let message = text;
+    try {
+      const body = JSON.parse(text);
+      message = body.detail || body.message || text;
+    } catch {
+      // Keep the raw response when the server did not return JSON.
+    }
+    throw new Error(message || `Request failed (${res.status})`);
   }
 
   if (res.status === 204) return null;

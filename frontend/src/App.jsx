@@ -16,7 +16,7 @@ print([math.sqrt(n) for n in numbers])
 `;
 
 export default function App() {
-  const [inputValue, setInputValue] = useState("0");
+  const [inputValue, setInputValue] = useState("");
   const {
     code,
     setCode,
@@ -196,8 +196,6 @@ export default function App() {
         onFontSizeChange={setEditorFontSize}
         panelRatio={panelRatio}
         onPanelRatioChange={setPanelRatio}
-        inputValue={inputValue}
-        onInputValueChange={setInputValue}
       />
 
       {isSyntaxWaiting && <div className="waiting-banner">Waiting for valid Python…</div>}
@@ -298,6 +296,10 @@ export default function App() {
         timedOut={result?.timed_out}
         truncated={result?.truncated}
         onJumpToLine={(line) => setJumpToLine({ line, t: Date.now() })}
+        inputValue={inputValue}
+        onInputValueChange={setInputValue}
+        onRun={runManually}
+        isRunning={isRunning}
       />
     </div>
   );

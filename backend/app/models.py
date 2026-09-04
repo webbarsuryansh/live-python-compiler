@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class ExecuteRequest(BaseModel):
     code: str = Field(..., description="Python source code to execute")
-    input_value: str = Field(default="0", max_length=1000)
+    input_value: str = Field(default="", max_length=1000, description="One stdin value per line")
     timeout_seconds: float = Field(5.0, ge=0.1, le=15.0)
     max_steps: int = Field(2000, ge=1, le=20000)
 
@@ -72,6 +72,7 @@ class UserSummary(BaseModel):
     role: str = "user"
     ai_plan: str = "free"
     ai_subscription_status: str = "active"
+    avatar_url: str = ""
 
 
 class AuthResponse(BaseModel):
@@ -92,6 +93,7 @@ class ChangePasswordRequest(BaseModel):
 class UpdateProfileRequest(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=80)
     email: Optional[str] = Field(None, min_length=3, max_length=200)
+    avatar_url: Optional[str] = Field(None, max_length=1000)
 
 
 class UserProfileResponse(BaseModel):
@@ -103,6 +105,7 @@ class UserProfileResponse(BaseModel):
     updated_at: str
     ai_plan: str = "free"
     ai_subscription_status: str = "active"
+    avatar_url: str = ""
 
 
 # ===== Code Management Models =====

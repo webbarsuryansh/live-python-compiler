@@ -16,7 +16,7 @@ import time
 import linecache
 from io import StringIO
 
-from .serialize import snapshot_vars
+from .serialize import snapshot_vars, to_safe
 
 USER_CODE_FILENAME = "<live_python_compiler>"
 
@@ -146,7 +146,7 @@ class Tracer:
                 "prev_variables": self._prev_vars,
                 "stdout_delta": self._stdout_delta(),
                 "duration_ms": 0.0,
-                "return_value": snapshot_vars({"__return__": arg})["__return__"] if arg is not None else None,
+                "return_value": to_safe(arg) if arg is not None else None,
             })
             self._prev_vars = curr_vars
             self._pending_line = None

@@ -12,8 +12,6 @@ export default function Header({
   onFontSizeChange,
   panelRatio,
   onPanelRatioChange,
-  inputValue,
-  onInputValueChange,
 }) {
   return (
     <header className="app-header">
@@ -28,14 +26,6 @@ export default function Header({
           value={codeTitle}
           onChange={(e) => onTitleChange?.(e.target.value)}
           aria-label="Script title"
-        />
-
-        <input
-          className="stdin-input"
-          value={inputValue}
-          onChange={(e) => onInputValueChange?.(e.target.value)}
-          aria-label="Program input"
-          placeholder="input() value"
         />
 
         {!liveMode && (

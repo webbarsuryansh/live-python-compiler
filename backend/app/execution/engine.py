@@ -23,14 +23,29 @@ from .serialize import snapshot_vars
 _BLOCKED_BUILTINS = {"open", "exec", "eval", "compile"}
 
 
-def _make_safe_builtins(input_value: str = "0"):
+def _make_safe_builtins(input_value: str = ""):
     safe = {}
     for name in dir(builtins):
         if name in _BLOCKED_BUILTINS:
             continue
         safe[name] = getattr(builtins, name)
     safe["__import__"] = __import__
-    safe["input"] = lambda prompt="": input_value
+
+    input_lines = input_value.splitlines()
+    input_index = 0
+
+    def read_input(prompt=""):
+        nonlocal input_index
+        if input_index >= len(input_lines):
+            if prompt:
+                print(prompt, end="")
+            raise EOFError("No input provided. Enter one value per line for each input() call.")
+        value = input_lines[input_index]
+        input_index += 1
+        print(f"{prompt}{value}")
+        return value
+
+    safe["input"] = read_input
     return safe
 
 
@@ -52,7 +67,7 @@ def _friendly_error(exc: BaseException, source_lines: list[str]):
     }
 
 
-def run_code(code: str, timeout_seconds: float = 5.0, max_steps: int = 2000, input_value: str = "0") -> dict:
+def run_code(code: str, timeout_seconds: float = 5.0, max_steps: int = 2000, input_value: str = "") -> dict:
     start = time.monotonic()
     source_lines = code.splitlines()
 

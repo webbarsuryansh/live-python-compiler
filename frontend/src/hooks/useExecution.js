@@ -4,7 +4,7 @@ import { useDebounce } from "./useDebounce";
 
 const DEBOUNCE_MS = 500;
 
-export function useExecution(initialCode, inputValue = "0") {
+export function useExecution(initialCode, inputValue = "") {
   const [code, setCode] = useState(initialCode);
   const [liveMode, setLiveMode] = useState(true);
   const [result, setResult] = useState(null);
@@ -17,15 +17,20 @@ export function useExecution(initialCode, inputValue = "0") {
   const [speed, setSpeed] = useState(1);
 
   const playTimer = useRef(null);
+  const inputValueRef = useRef(inputValue);
   const debouncedCode = useDebounce(code, DEBOUNCE_MS);
   const lastRunToken = useRef(0);
+
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
 
   const runNow = useCallback(async (source) => {
     const token = ++lastRunToken.current;
     setIsRunning(true);
     setAwaitingValidCode(false);
     try {
-      const data = await executeCode(source, { inputValue });
+      const data = await executeCode(source, { inputValue: inputValueRef.current });
       if (token !== lastRunToken.current) return; // stale response
       setResult(data);
       setRunError(null);
@@ -36,7 +41,7 @@ export function useExecution(initialCode, inputValue = "0") {
     } finally {
       if (token === lastRunToken.current) setIsRunning(false);
     }
-  }, [inputValue]);
+  }, []);
 
   // Live mode: run automatically on debounced code changes.
   useEffect(() => {

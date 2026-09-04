@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ConsolePanel({ stdout, error, timedOut, truncated, onJumpToLine, style }) {
+export default function ConsolePanel({ stdout, error, timedOut, truncated, onJumpToLine, style, inputValue, onInputValueChange, onRun, isRunning }) {
   const lines = (stdout || "").split("\n").filter((_, i, arr) => !(i === arr.length - 1 && arr[i] === ""));
 
   return (
@@ -28,6 +28,21 @@ export default function ConsolePanel({ stdout, error, timedOut, truncated, onJum
             {line}
           </div>
         ))}
+        <div className="console-terminal-line">
+          <span className="console-prompt">&gt;</span>
+          <textarea
+            className="console-terminal-input"
+            value={inputValue}
+            onChange={(event) => onInputValueChange?.(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) onRun?.();
+            }}
+            aria-label="Console input"
+            placeholder="type values here, one per line"
+            rows={2}
+            disabled={isRunning}
+          />
+        </div>
       </div>
     </div>
   );

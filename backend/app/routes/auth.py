@@ -22,6 +22,7 @@ from ..models import (
     UserProfileResponse,
     UserSummary,
 )
+from ..media import get_imagekit_authentication
 from ..storage import (
     authenticate_user,
     change_password,
@@ -38,9 +39,19 @@ from ..storage import (
     update_saved_code,
     update_user,
     check_code_access,
+    StorageUnavailableError,
 )
 
 router = APIRouter()
+
+
+@router.get("/imagekit-auth")
+def imagekit_authentication(current_user: dict = Depends(get_current_user)):
+    """Return short-lived ImageKit upload credentials for the signed-in user."""
+    try:
+        return get_imagekit_authentication()
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 # ===== Authentication Endpoints =====
@@ -52,6 +63,8 @@ def register(payload: RegisterRequest):
         user = create_user(payload.name, payload.email, payload.password)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except StorageUnavailableError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     access_token = create_access_token(user["id"], role=user.get("role", "user"))
     refresh_token = create_refresh_token(user["id"])
@@ -118,6 +131,7 @@ def get_current_user_profile(current_user: dict = Depends(get_current_user)):
         updated_at=current_user.get("updated_at", ""),
         ai_plan=current_user.get("ai_plan", "free"),
         ai_subscription_status=current_user.get("ai_subscription_status", "active"),
+        avatar_url=current_user.get("avatar_url", ""),
     )
 
 
@@ -140,6 +154,8 @@ def update_profile(
         update_data["name"] = payload.name
     if payload.email is not None:
         update_data["email"] = payload.email
+    if payload.avatar_url is not None:
+        update_data["avatar_url"] = payload.avatar_url
     
     updated_user = update_user(current_user["id"], **update_data)
     if updated_user is None:
@@ -158,6 +174,7 @@ def update_profile(
         updated_at=full_user.get("updated_at", ""),
         ai_plan=full_user.get("ai_plan", "free"),
         ai_subscription_status=full_user.get("ai_subscription_status", "active"),
+        avatar_url=full_user.get("avatar_url", ""),
     )
 
 

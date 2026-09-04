@@ -5,3 +5,6 @@ __pycache__/
 .env
 backend/app/data/*.json
 .DS_Store
+
+.vercel
+.env*
